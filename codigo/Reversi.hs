@@ -8,6 +8,9 @@ module Reversi
 
 where
 
+import Char
+
+
 data Color = Negro | Blanco deriving Eq
 
 type Dimension = (Int, Int)
@@ -41,12 +44,12 @@ dimension = foldJuego id  f2
 
 -------------------------------------------------------------------------------  coordsQueInvierte 
 coordsQueInvierte :: Color -> Tablero -> Coordenada -> [Coordenada]
-coordsQueInvierte col t c = coordEntre c (primerosAlineados col t c ) 
+coordsQueInvierte col t c = coordEntre col t c  (primerosAlineados col t c ) 
 
 --primerosAlineados k t c devuelve todos los puntos de color k mas cercanos a c que estan alineados ortogonalemente o diagonalmente al punto c en el tablero t
 primerosAlineados:: Color -> Tablero -> Coordenada -> [Coordenada]
 primerosAlineados k (Tablero (n,m) posic) (f,c) =  filter (masCercano puntos (f,c)) puntos
-	where puntos = [ a | i<-[0..(max (n-1) (m-1))], a<-[(f,c+i),(f,c-i),(f+i,c),(f-i,c),(f+i,c+i),(f+i,c-i),(f-i,c+i),(f-i,c-i)], enRango a (n,m) && (posic a) == Just k ]			
+	where puntos = [ a | i<-[0..(max (n-1) (m-1))], a<-[(f,c+i),(f,c-i),(f+i,c),(f-i,c),(f+i,c+i),(f+i,c-i),(f-i,c+i),(f-i,c-i)], enRango a (n,m) && enRango (f,c) (n,m) && (posic a) == Just k ]			
 
 --masCercano xs t c p dice si c es el punto mas cercano de todos los puntos xs al punto p
 masCercano::[Coordenada]->Coordenada->Coordenada->Bool
@@ -66,13 +69,18 @@ masCerca 	(a,b) (e,f) (c,d)
 			|a==c && b<d    = not(e==c && f<d) ||    (e==a && f<=b)
 
 --coordEntre c xs: devuelve los puntos entre c y cada uno de los de xs. Para q funcione correctamente, cada uno de los xs debe estar alineado ortogonalemente o diagonalmente al punto c
-coordEntre::Coordenada->[Coordenada]->[Coordenada]
-coordEntre c xs = foldr (f c) [] xs
-	where f c x r = ( dameCoordEntre c x ) ++ r
+coordEntre::Color->Tablero->Coordenada->[Coordenada]->[Coordenada]
+coordEntre col t c xs = foldr f  [] xs
+	where f x r	 =	if( sonConsecutivas c x ( dameCoordEntre (negado col) t c x )) 
+		then ( dameCoordEntre (negado col) t c x ) ++ r 
+		else r
 
---dameCoordEntre d h devuelve todas las coordenadas lineales entre d y h.
-dameCoordEntre::Coordenada->Coordenada->[Coordenada]
-dameCoordEntre (df,dc) (hf,hc) = [(f,c)| f<-[(min df hf)..(max df hf)], c<-[(min dc hc)..(max dc hc)], ( hc == dc || hf == df || abs(hc-c)==abs(hf-f) ) && (f,c) /= (df, dc) && (f,c) /= (hf, hc)]
+--dameCoordEntre d h devuelve todas las coordenadas lineales entre d y h de color col.
+dameCoordEntre::Color->Tablero->Coordenada->Coordenada->[Coordenada]
+dameCoordEntre col (Tablero dim pos) (df,dc) (hf,hc) = [(f,c)| f<-[(min df hf)..(max df hf)], c<-[(min dc hc)..(max dc hc)], ( hc == dc || hf == df || abs(hc-c)==abs(hf-f) ) && (f,c) /= (df, dc) && (f,c) /= (hf, hc) && pos(f,c)==Just col]
+
+sonConsecutivas::Coordenada->Coordenada->[Coordenada]->Bool
+sonConsecutivas (df,dc) (hf,hc) xs = and [elem (f,c) xs| f<-[(min df hf)..(max df hf)], c<-[(min dc hc)..(max dc hc)], ( hc == dc || hf == df || abs(hc-c)==abs(hf-f) ) && (f,c) /= (df, dc) && (f,c) /= (hf, hc)]
 
 negado Blanco = Negro
 negado Negro = Blanco
@@ -92,13 +100,13 @@ turno j | not( terminoElJuego j )= fst (tabCol j)
 --modificar col t coord = devuelve el tablero modificado luego de que juegue el color col en la coord. coord         
 modificar::Color->Tablero->Coordenada->(Color, Tablero)
 modificar col (Tablero dim pos) coord 
-	| puedeJugarEn col t coord = (negado col, Tablero dim (nuevasPosic col (pos) (coordsQueInvierte col t coord )))
+	| puedeJugarEn col t coord = (negado col, Tablero dim (nuevasPosic col (pos) (coord:(coordsQueInvierte col t coord )  )))
 	| otherwise = (col, t)
 		where t =(Tablero dim pos)		
  
 nuevasPosic::Color->(Coordenada -> Maybe Color)->[Coordenada]->(Coordenada -> Maybe Color)
 nuevasPosic col pos xs (f,c) 
-	| elem (f,c) xs = Just (negado col)
+	| elem (f,c) xs = Just col
 	| otherwise = pos (f,c)
 
 --Devuelve el tablero y el color que tiene que jugar
@@ -130,13 +138,15 @@ diferenciaNegrasBlancas j = (contar Negro (tablero j )) - (contar Blanco ( table
 
 
 -------------------------------------------------Pruebas
-tabPrueba = Tablero (6,6) pos
-	where pos coord
+tabPrueba = Tablero (6,6) fPrueba
+
+fPrueba::Coordenada->Maybe Color
+fPrueba	coord 
 		| coord `elem` [(0,2),(0,3),(0,4),(1,0),(1,4),(2,1),(2,3),(3,2),(3,3),(4,0)] = Just Negro
 		| coord `elem` [(1,1),(1,2),(1,5),(2,2),(2,4),(3,1),(4,3),(5,3)] = Just Blanco
 		| otherwise = Nothing
-
-juegoPrueba = Poner (Comenzar (6,6)) (4,3)
+			
+jPrueba = Poner( Poner (Comenzar (6,6)) (3,4) ) (2,4)
 inicial = tableroInicial ( 6,6 )
       	    
 dim::Tablero->Dimension
@@ -148,23 +158,83 @@ color (Tablero d f) c = f c
 instance Show Color where  
   show Negro = "X"         
   show Blanco = "O"        
+
+mostrarColor :: Maybe Color -> String
+mostrarColor = maybe "." show
+
+mostrarResultado :: Maybe Color -> String
+mostrarResultado =
+  maybe "Empatan."
+        (\ x -> "Ganan las " ++ show x ++ ".")
+  
+instance Show Juego where
+  show j =
+    "\n" ++ lx ++ "\n" ++
+    concatMap mostrarFila [0..my-1] ++
+    lx ++ "\n\n"
+    where
+      (Tablero (mx, my) pos) = tablero j
+      mostrarFila y =
+        " " ++ ly ++ marca (-1, y) ++
+        concat [mostrarColor (pos (x, y)) ++ marca (x, y) |
+                x <- [0..mx-1]] ++
+        ly ++ "\n"
+        where ly = show y
+      marca (x, y)
+        | ultimaCoordJugada j == Just (x, y) = ")"
+        | ultimaCoordJugada j == Just (x + 1, y) = "("
+        | otherwise = " "
+      lx = "   " ++ concatMap (\ x -> (chr (ord 'A' + x):" ")) [0..mx-1]
+
+instance Show Tablero where
+  show t =
+    "\n" ++ lx ++ "\n" ++
+    concatMap mostrarFila [0..my-1] ++
+    lx ++ "\n\n"
+    where
+      (Tablero (mx, my) pos) = t
+      mostrarFila y =
+        " " ++ ly ++ " " ++
+        concat [mostrarColor (pos (x, y)) ++ " " |
+                x <- [0..mx-1]] ++
+        ly ++ "\n"
+        where ly = show y      
+      lx = "   " ++ concatMap (\ x -> (chr (ord '0' + x):" ")) [0..mx-1]
+
 -------------------------------------------------------------------------------
 
-dimensionP = dimension juegoPrueba
-primerosAlineadosP = primerosAlineados Negro tabPrueba (1,3)
-coordsQueInvierteP1 = coordsQueInvierte Negro tabPrueba (1,3)
-coordsQueInvierteP2 = coordsQueInvierte Blanco tabPrueba (1,3)
+dimensionP = dimension jPrueba
 
-puedeJugarEnP1 = puedeJugarEn Negro tabPrueba (5,2)
-puedeJugarEnP2 = puedeJugarEn Blanco tabPrueba (5,2)
-puedeJugarEnP3 = puedeJugarEn Negro tabPrueba (1,3)
-puedeJugarEnP4 = puedeJugarEn Blanco tabPrueba (1,3)
-puedeJugarEnP5 = puedeJugarEn Negro tabPrueba (6,3)
-puedeJugarEnP6 = puedeJugarEn Negro tabPrueba (5,3)
+pA1 = primerosAlineados Negro tabPrueba (1,3) --resultado esperado [(1,4),(2,3),(0,3),(0,4),(0,2),(1,0),(4,0)]
+pA2 = primerosAlineados Blanco tabPrueba (1,3) --resultado esperado  [(1,2),(2,4),(2,2),(1,5),(4,3)]
 
-cI1  = coordsQueInvierte Negro tabPrueba (5,2)
-cI2  = coordsQueInvierte Blanco tabPrueba (5,2)
-cI3  = coordsQueInvierte Negro tabPrueba (1,3)
-cI4  = coordsQueInvierte Blanco tabPrueba (1,3)
-cI5  = coordsQueInvierte Negro tabPrueba (6,3)
-cI6  = coordsQueInvierte Negro tabPrueba (5,3)
+dC1 = dameCoordEntre Blanco tabPrueba (1,3) (1,4) --resultado esperado  []
+dC2 = dameCoordEntre Blanco tabPrueba (1,3) (2,3) --resultado esperado  []
+dC3 = dameCoordEntre Blanco tabPrueba (1,3) (0,3) --resultado esperado  []
+dC4 = dameCoordEntre Blanco tabPrueba (1,3) (0,4) --resultado esperado  []
+dC5 = dameCoordEntre Blanco tabPrueba (1,3) (0,2) --resultado esperado  []
+dC6 = dameCoordEntre Blanco tabPrueba (1,3) (1,0) --resultado esperado  [(1,1),(1,2)]
+dC7 = dameCoordEntre Blanco tabPrueba (1,3) (4,0) --resultado esperado  [(2,2),(3,1)]
+
+sC1 = sonConsecutivas (1,3) (1,0) dC6 --resultado esperado  True
+sC2 = sonConsecutivas (1,3) (4,0) dC7 --resultado esperado  True
+
+cE1 = coordEntre Negro tabPrueba (1,3) pA1 --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
+cE2 = coordEntre Blanco tabPrueba (1,3) pA2 --resultado esperado [(1,4),(2,3),(3,3)]
+
+cI1  = coordsQueInvierte Negro tabPrueba (5,2)	--resultado esperado  []
+cI2  = coordsQueInvierte Blanco tabPrueba (5,2)	--resultado esperado  []
+cI3  = coordsQueInvierte Negro tabPrueba (1,3)  --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
+cI4  = coordsQueInvierte Blanco tabPrueba (1,3) --resultado esperado [(1,4),(2,3),(3,3)]
+cI5  = coordsQueInvierte Negro tabPrueba (6,3)  --resultado esperado  []
+cI6  = coordsQueInvierte Negro tabPrueba (5,3)  --resultado esperado  [(4,3)]
+
+pJEP1 = puedeJugarEn Negro tabPrueba (5,2)   --resultado esperado False
+pJEP2 = puedeJugarEn Blanco tabPrueba (5,2)  --resultado esperado False
+pJEP3 = puedeJugarEn Negro tabPrueba (1,3)   --resultado esperado True
+pJEP4 = puedeJugarEn Blanco tabPrueba (1,3)  --resultado esperado True
+pJEP5 = puedeJugarEn Negro tabPrueba (6,3)   --resultado esperado False
+pJEP6 = puedeJugarEn Negro tabPrueba (5,3)	 --resultado esperado False
+
+uCJ1 = ultimaCoordJugada jPrueba 	 --resultado esperado Just (2,4)
+uCJ2 = ultimaCoordJugada ( Comenzar (6,6) ) --resultado esperado Nothing
