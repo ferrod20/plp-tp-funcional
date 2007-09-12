@@ -20,15 +20,19 @@ foldNat :: b-> (b->b) -> Int -> b
 foldNat fCero fN 0 = fCero 
 foldNat fCero fN n = fN (foldNat fCero fN (n-1))
 
-aPrueba = (Nodo 5 [(Nodo 4 [(Nodo 3 [Nodo 2 [(Nodo 1 [])]])])])
+avacio = Nodo 0 [] --arbol de altura 1 (no hay nil...)
+aPrueba = (Nodo 5 [(Nodo 4 [(Nodo 3 [Nodo 2 [(Nodo 1 [])]])])])       --arbol de altura 5
+aPrueba2 = ( Nodo 5 [(Nodo 4 []) ,(Nodo 4 []) , (Nodo 4 []) , (Nodo 4 [])] ) --arbol de altura 2
 
 altura::Arbol a->Int
 altura ar = foldArbol f ar 
 	where f n r = 1 + (if (length r) > 0 then (maximum r) else 0)
 	
+	
+--usar un filter + altura ..por ahora no funka...
 --podar :: Int -> Arbol a -> Arbol a
---podar altura (Nodo n xs) = foldNat (Nodo n []) f altura
---	where f n arbol = podar (n-1) arbol
+--podar n ab = foldArbol (\n xs -> filter (\x -> altura x <= n) xs ) ab
+	
 
 --foldArbol (g altura) ar
 --	where g altura n xs  = foldNat (Nodo n []) f2
@@ -52,3 +56,5 @@ altura ar = foldArbol f ar
 --  b ->             -- beta
 --  Arbol a -> a
 --
+
+ 
