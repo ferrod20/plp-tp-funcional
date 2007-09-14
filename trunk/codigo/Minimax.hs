@@ -9,9 +9,6 @@ data Arbol a = Nodo a [Arbol a]
 foldArbol :: (a->[b]->b)-> Arbol a -> b
 foldArbol g (Nodo n xs)  =	g n (map (foldArbol g) xs) 
 
-foldArbol2 :: (a-> [b] ->b) -> ([b] -> [b]) -> Arbol a -> b
-foldArbol2 g h (Nodo n ts) = g n (map (foldArbol2 g h) ts)
-
 mapArbol :: (a -> b) -> Arbol a -> Arbol b
 mapArbol f ar = foldArbol g ar 
 	where g n xs = Nodo (f n) xs
@@ -32,7 +29,34 @@ altura ar = foldArbol f ar
 --usar un filter + altura ..por ahora no funka...
 --podar :: Int -> Arbol a -> Arbol a
 --podar n ab = foldArbol (\n xs -> filter (\x -> altura x <= n) xs ) ab
+
+-- FER-------------------------------------------------
+--Ayer pude consultar sobre la funcion podar del TP.
+--Lo que saque en claro es lo siguiente:
+--1) Se hace con foldNat.
+--2) Se hace de la siguiente manera
 	
+--podar :: Int -> Arbol a -> Arbol a
+--podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarNivel (Nodo n xs)) alt 
+--	where agregarNivel arbolOriginal arbolTamN-1
+  
+--3) Falta hacer agregarNivel (q me dijo que la haga yo....creo q era mucho la haga toda el....aunque pensandolo bien....)
+ 
+--Idea: agregarNivel toma el arbol original y un arbol de tamaño n-1, yo tengo que crear el arbol de altura n....
+--Como??? Utilizo el arbol original
+--Entonces el problema se reduce a: hacer una funcion que dados 2 arboles ( el original y uno de altura n-1), devuelve el arbol de altura n. 
+--Idea: recorrerlos e ir viendo cuando el original tiene hijos y el otro no.....Ahi ponerle al otro hijos de altura 1.
+-- FER-------------------------------------------------	
+
+--En este también consulté y vale recursion explicita, creo que asi esta bien.
+aArbol::[a]->[Arbol a]
+aArbol xs = map (\x->Nodo x []) xs
+
+arbolDeMovidas :: (a -> [a]) -> a -> Arbol a
+arbolDeMovidas f x = aM f (Nodo x [])
+
+aM::(a -> [a])->Arbol a->Arbol a
+aM f (Nodo n xs) = Nodo n  (map (aM f) (aArbol(f n)) )
 
 --foldArbol (g altura) ar
 --	where g altura n xs  = foldNat (Nodo n []) f2
