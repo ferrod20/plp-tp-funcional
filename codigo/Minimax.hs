@@ -37,7 +37,7 @@ altura ar = foldArbol f ar
 --1) Se hace con foldNat.
 --2) Se hace de la siguiente manera
 	
-podar :: Int -> Arbol a -> Arbol a
+--podar :: Int -> Arbol a -> Arbol a
 --podar alt (Nodo n xs) = foldNat (Nodo n []) agregarNivel alt
 --podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarNivel (Nodo n xs)) alt 
 --	where agregarNivel arbolOriginal arbolTamN-1 = arbolOriginal
@@ -107,7 +107,15 @@ aM f (Nodo n xs) = Nodo n  (map (aM f) (aArbol(f n)) )
 --  (a -> Bool) ->  -- turno del jugador que maximiza?
 --  Arbol a -> a
 
+-- Pattern matching podemos usar !
 --minimax :: Ord b => (a -> b) -> (a -> Bool) -> Arbol a -> a
+--minimax feval fturno (Nodo a []) = feval a
+--minimax feval fturno (Nodo a xs) = optimice (map (\x -> minimax feval fturno x) xs )
+  --                              where optimice j = if fturno (jugadorMaximiza j) then
+	--							                      maximize j
+		--										else
+          --                                            maximize j											
+
 
 --------------------------------------------------------------------------------
 --
