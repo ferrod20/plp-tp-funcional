@@ -168,109 +168,109 @@ diferenciaNegrasBlancas j = (contar Negro (tablero j )) - (contar Blanco ( table
 	where contar col (Tablero (n,m) pos) = length [(f, c) | f<-[0..n-1], c<-[0..m-1], pos( f, c) == Just col]
 
 -------------------------------------------------Pruebas: De aca en adelante, es todo código para probar.
-tabPrueba = Tablero (6,6) fPrueba
-
-fPrueba::Coordenada->Maybe Color
-fPrueba	coord 
-		| coord `elem` [(0,2),(0,3),(0,4),(1,0),(1,4),(2,1),(2,3),(3,2),(3,3),(4,0)] = Just Negro
-		| coord `elem` [(1,1),(1,2),(1,5),(2,2),(2,4),(3,1),(4,3),(5,3)] = Just Blanco
-		| otherwise = Nothing
-			
-jPrueba = Poner(Poner (Comenzar (6,6)) (2,4))(3,4)
-      	    
-
-instance Show Color where  
-  show Negro = "X"         
-  show Blanco = "O"        
-
-mostrarColor :: Maybe Color -> String
-mostrarColor = maybe "." show
-
-mostrarResultado :: Maybe Color -> String
-mostrarResultado =
-  maybe "Empatan."
-        (\ x -> "Ganan las " ++ show x ++ ".")
-  
-instance Show Juego where
-  show j =
-    "\n" ++ lx ++ "\n" ++
-    concatMap mostrarFila [0..mx-1] ++
-    lx ++ "\n\n"
-    where
-      (Tablero (mx, my) pos) = tablero j
-      mostrarFila y =
-        " " ++ ly ++ marca (-1, y) ++
-        concat [mostrarColor (pos (y, x)) ++ marca (y, x) |
-                x <- [0..my-1]] ++
-        ly ++ "\n"
-        where ly = show y
-      marca (x, y)
-        | ultimaCoordJugada j == Just (x, y) = ")"
-        | ultimaCoordJugada j == Just (x , y+1) = "("
-        | otherwise = " "
-      lx = "   " ++ concatMap (\ x -> (chr (ord '0' + x):" ")) [0..my-1]
-
-instance Show Tablero where
-  show t =
-    "\n" ++ lx ++ "\n" ++
-    concatMap mostrarFila [0..mx-1] ++
-    lx ++ "\n\n"
-    where
-      (Tablero (mx, my) pos) = t
-      mostrarFila y =
-        " " ++ ly ++ " " ++
-        concat [mostrarColor (pos (y, x)) ++ " " |
-                x <- [0..my-1]] ++
-        ly ++ "\n"
-        where ly = show y      
-      lx = "   " ++ concatMap (\ x -> (chr (ord '0' + x):" ")) [0..my-1]
-
--------------------------------------------------------------------------------
-
-dimensionP = dimension jPrueba
-
-pA1 = primerosAlineados Negro tabPrueba (1,3) --resultado esperado [(1,4),(2,3),(0,3),(0,4),(0,2),(1,0),(4,0)]
-pA2 = primerosAlineados Blanco tabPrueba (1,3) --resultado esperado  [(1,2),(2,4),(2,2),(1,5),(4,3)]
-
-dC1 = dameCoordEntre Blanco tabPrueba (1,3) (1,4) --resultado esperado  []
-dC2 = dameCoordEntre Blanco tabPrueba (1,3) (2,3) --resultado esperado  []
-dC3 = dameCoordEntre Blanco tabPrueba (1,3) (0,3) --resultado esperado  []
-dC4 = dameCoordEntre Blanco tabPrueba (1,3) (0,4) --resultado esperado  []
-dC5 = dameCoordEntre Blanco tabPrueba (1,3) (0,2) --resultado esperado  []
-dC6 = dameCoordEntre Blanco tabPrueba (1,3) (1,0) --resultado esperado  [(1,1),(1,2)]
-dC7 = dameCoordEntre Blanco tabPrueba (1,3) (4,0) --resultado esperado  [(2,2),(3,1)]
-
-sC1 = sonConsecutivas (1,3) (1,0) dC6 --resultado esperado  True
-sC2 = sonConsecutivas (1,3) (4,0) dC7 --resultado esperado  True
-
-cE1 = coordEntre Negro tabPrueba (1,3) pA1 --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
-cE2 = coordEntre Blanco tabPrueba (1,3) pA2 --resultado esperado [(1,4),(2,3),(3,3)]
-
-cI1  = coordsQueInvierte Negro tabPrueba (5,2)	--resultado esperado  []
-cI2  = coordsQueInvierte Blanco tabPrueba (5,2)	--resultado esperado  []
-cI3  = coordsQueInvierte Negro tabPrueba (1,3)  --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
-cI4  = coordsQueInvierte Blanco tabPrueba (1,3) --resultado esperado [(1,4),(2,3),(3,3)]
-cI5  = coordsQueInvierte Negro tabPrueba (6,3)  --resultado esperado  []
-cI6  = coordsQueInvierte Negro tabPrueba (5,3)  --resultado esperado  [(4,3)]
-
-pJEP1 = puedeJugarEn Negro tabPrueba (5,2)   --resultado esperado False
-pJEP2 = puedeJugarEn Blanco tabPrueba (5,2)  --resultado esperado False
-pJEP3 = puedeJugarEn Negro tabPrueba (1,3)   --resultado esperado True
-pJEP4 = puedeJugarEn Blanco tabPrueba (1,3)  --resultado esperado True
-pJEP5 = puedeJugarEn Negro tabPrueba (6,3)   --resultado esperado False
-pJEP6 = puedeJugarEn Negro tabPrueba (5,3)	 --resultado esperado False
-
-uCJ1 = ultimaCoordJugada jPrueba 	 --resultado esperado Just (3,4)
-uCJ2 = ultimaCoordJugada ( Comenzar (6,6) ) --resultado esperado Nothing
-
-jPrueba2 = Poner (Poner (Poner(Poner( Poner (Comenzar (3,4)) (0,3)) (1,3))(2,1))(1,0)) (2,0)
-jTerminado = (Poner( Poner jPrueba2 (0,0))(2,3))
---modificar
---nuevasPosic
---tabCol
---tablero
---turno
---movidasValidas
---diferenciaNegrasBlancas
---terminoElJuego
---quienGano
+-- tabPrueba = Tablero (6,6) fPrueba
+-- 
+-- fPrueba::Coordenada->Maybe Color
+-- fPrueba	coord 
+-- 		| coord `elem` [(0,2),(0,3),(0,4),(1,0),(1,4),(2,1),(2,3),(3,2),(3,3),(4,0)] = Just Negro
+-- 		| coord `elem` [(1,1),(1,2),(1,5),(2,2),(2,4),(3,1),(4,3),(5,3)] = Just Blanco
+-- 		| otherwise = Nothing
+-- 			
+-- jPrueba = Poner(Poner (Comenzar (6,6)) (2,4))(3,4)
+--       	    
+-- 
+-- instance Show Color where  
+--   show Negro = "X"         
+--   show Blanco = "O"        
+-- 
+-- mostrarColor :: Maybe Color -> String
+-- mostrarColor = maybe "." show
+-- 
+-- mostrarResultado :: Maybe Color -> String
+-- mostrarResultado =
+--   maybe "Empatan."
+--         (\ x -> "Ganan las " ++ show x ++ ".")
+--   
+-- instance Show Juego where
+--   show j =
+--     "\n" ++ lx ++ "\n" ++
+--     concatMap mostrarFila [0..mx-1] ++
+--     lx ++ "\n\n"
+--     where
+--       (Tablero (mx, my) pos) = tablero j
+--       mostrarFila y =
+--         " " ++ ly ++ marca (-1, y) ++
+--         concat [mostrarColor (pos (y, x)) ++ marca (y, x) |
+--                 x <- [0..my-1]] ++
+--         ly ++ "\n"
+--         where ly = show y
+--       marca (x, y)
+--         | ultimaCoordJugada j == Just (x, y) = ")"
+--         | ultimaCoordJugada j == Just (x , y+1) = "("
+--         | otherwise = " "
+--       lx = "   " ++ concatMap (\ x -> (chr (ord '0' + x):" ")) [0..my-1]
+-- 
+-- instance Show Tablero where
+--   show t =
+--     "\n" ++ lx ++ "\n" ++
+--     concatMap mostrarFila [0..mx-1] ++
+--     lx ++ "\n\n"
+--     where
+--       (Tablero (mx, my) pos) = t
+--       mostrarFila y =
+--         " " ++ ly ++ " " ++
+--         concat [mostrarColor (pos (y, x)) ++ " " |
+--                 x <- [0..my-1]] ++
+--         ly ++ "\n"
+--         where ly = show y      
+--       lx = "   " ++ concatMap (\ x -> (chr (ord '0' + x):" ")) [0..my-1]
+-- 
+-- -------------------------------------------------------------------------------
+-- 
+-- dimensionP = dimension jPrueba
+-- 
+-- pA1 = primerosAlineados Negro tabPrueba (1,3) --resultado esperado [(1,4),(2,3),(0,3),(0,4),(0,2),(1,0),(4,0)]
+-- pA2 = primerosAlineados Blanco tabPrueba (1,3) --resultado esperado  [(1,2),(2,4),(2,2),(1,5),(4,3)]
+-- 
+-- dC1 = dameCoordEntre Blanco tabPrueba (1,3) (1,4) --resultado esperado  []
+-- dC2 = dameCoordEntre Blanco tabPrueba (1,3) (2,3) --resultado esperado  []
+-- dC3 = dameCoordEntre Blanco tabPrueba (1,3) (0,3) --resultado esperado  []
+-- dC4 = dameCoordEntre Blanco tabPrueba (1,3) (0,4) --resultado esperado  []
+-- dC5 = dameCoordEntre Blanco tabPrueba (1,3) (0,2) --resultado esperado  []
+-- dC6 = dameCoordEntre Blanco tabPrueba (1,3) (1,0) --resultado esperado  [(1,1),(1,2)]
+-- dC7 = dameCoordEntre Blanco tabPrueba (1,3) (4,0) --resultado esperado  [(2,2),(3,1)]
+-- 
+-- sC1 = sonConsecutivas (1,3) (1,0) dC6 --resultado esperado  True
+-- sC2 = sonConsecutivas (1,3) (4,0) dC7 --resultado esperado  True
+-- 
+-- cE1 = coordEntre Negro tabPrueba (1,3) pA1 --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
+-- cE2 = coordEntre Blanco tabPrueba (1,3) pA2 --resultado esperado [(1,4),(2,3),(3,3)]
+-- 
+-- cI1  = coordsQueInvierte Negro tabPrueba (5,2)	--resultado esperado  []
+-- cI2  = coordsQueInvierte Blanco tabPrueba (5,2)	--resultado esperado  []
+-- cI3  = coordsQueInvierte Negro tabPrueba (1,3)  --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
+-- cI4  = coordsQueInvierte Blanco tabPrueba (1,3) --resultado esperado [(1,4),(2,3),(3,3)]
+-- cI5  = coordsQueInvierte Negro tabPrueba (6,3)  --resultado esperado  []
+-- cI6  = coordsQueInvierte Negro tabPrueba (5,3)  --resultado esperado  [(4,3)]
+-- 
+-- pJEP1 = puedeJugarEn Negro tabPrueba (5,2)   --resultado esperado False
+-- pJEP2 = puedeJugarEn Blanco tabPrueba (5,2)  --resultado esperado False
+-- pJEP3 = puedeJugarEn Negro tabPrueba (1,3)   --resultado esperado True
+-- pJEP4 = puedeJugarEn Blanco tabPrueba (1,3)  --resultado esperado True
+-- pJEP5 = puedeJugarEn Negro tabPrueba (6,3)   --resultado esperado False
+-- pJEP6 = puedeJugarEn Negro tabPrueba (5,3)	 --resultado esperado False
+-- 
+-- uCJ1 = ultimaCoordJugada jPrueba 	 --resultado esperado Just (3,4)
+-- uCJ2 = ultimaCoordJugada ( Comenzar (6,6) ) --resultado esperado Nothing
+-- 
+-- jPrueba2 = Poner (Poner (Poner(Poner( Poner (Comenzar (3,4)) (0,3)) (1,3))(2,1))(1,0)) (2,0)
+-- jTerminado = (Poner( Poner jPrueba2 (0,0))(2,3))
+-- --modificar
+-- --nuevasPosic
+-- --tabCol
+-- --tablero
+-- --turno
+-- --movidasValidas
+-- --diferenciaNegrasBlancas
+-- --terminoElJuego
+-- --quienGano
