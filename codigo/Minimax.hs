@@ -20,19 +20,36 @@ foldNat fCero fN n = fN (foldNat fCero fN (n-1))
 
 
 -- PODAR ANDA USANDO RECURSION!!!
-podar :: Int -> Arbol a -> Arbol a
-podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt 
+--podar :: Int -> Arbol a -> Arbol a
+--podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt 
 	
 
-agregarUnNivel :: Arbol a -> Arbol a -> Arbol a
-agregarUnNivel (Nodo a xs) (Nodo b []) = Nodo b (damePadres xs)--todos los padres de los arboles de xs
-agregarUnNivel (Nodo a (x:xs)) (Nodo b (t:ts)) = Nodo a ((agregarUnNivel x t):(agregarATodosUnNivel xs ts))
+--agregarUnNivel :: Arbol a -> Arbol a -> Arbol a
+--agregarUnNivel (Nodo a xs) (Nodo b []) = Nodo b (damePadres xs)--todos los padres de los arboles de xs
+--agregarUnNivel (Nodo a (x:xs)) (Nodo b (t:ts)) = Nodo a ((agregarUnNivel x t):(agregarATodosUnNivel xs ts))
+
+--agregarATodosUnNivel :: [Arbol a] -> [Arbol a] -> [Arbol a]
+--agregarATodosUnNivel [] [] = []
+--agregarATodosUnNivel [_] [] = []
+--agregarATodosUnNivel [] [_] = []
+--agregarATodosUnNivel (a:as) (b:bs) = (agregarUnNivel a b):(agregarATodosUnNivel as bs)
+
+--definimos un esquema de recursion auxiliar para permitir esquemas con doble recursion
+
+podar :: Int -> Arbol a -> Arbol a
+podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt 
+
+--habria que poner bien el tipo...pero asi como esta funciona =)
+--xzipGTWith::( a -> a -> b )->( [Arbol a]-> b )-> Arbol a -> Arbol a -> b
+xzipGTWith f g (Nodo x xs) (Nodo y []) = Nodo (f x y) (g xs)
+xzipGTWith f g (Nodo x xs) (Nodo y ys) = Nodo (f x y) (zipWith (xzipGTWith f g) xs ys)
 
 agregarATodosUnNivel :: [Arbol a] -> [Arbol a] -> [Arbol a]
-agregarATodosUnNivel [] [] = []
-agregarATodosUnNivel [_] [] = []
-agregarATodosUnNivel [] [_] = []
-agregarATodosUnNivel (a:as) (b:bs) = (agregarUnNivel a b):(agregarATodosUnNivel as bs)
+agregarATodosUnNivel xs ys = zipWith agregarUnNivel xs ys
+
+agregarUnNivel :: Arbol a -> Arbol a -> Arbol a
+agregarUnNivel ab1 ab2 = xzipGTWith const damePadres ab1 ab2
+
 
 damePadres :: [Arbol a] -> [Arbol a]
 damePadres xs = map (\x->damePadre x) xs
