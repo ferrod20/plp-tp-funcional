@@ -39,8 +39,9 @@ foldNat fCero fN n = fN (foldNat fCero fN (n-1))
 podar :: Int -> Arbol a -> Arbol a
 podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt 
 
---habria que poner bien el tipo...pero asi como esta funciona =)
---xzipGTWith::( a -> a -> b )->( [Arbol a]-> b )-> Arbol a -> Arbol a -> b
+--Este esquema de recursion lo definimos para poder realizar recursiones doblemente encadenadas
+--ya que con el FoldArbol asi como asi...no es posible hacer este tipo de recursiones
+xzipGTWith::(a -> a -> a) -> ([Arbol a] -> [Arbol a]) -> Arbol a -> Arbol a -> Arbol a
 xzipGTWith f g (Nodo x xs) (Nodo y []) = Nodo (f x y) (g xs)
 xzipGTWith f g (Nodo x xs) (Nodo y ys) = Nodo (f x y) (zipWith (xzipGTWith f g) xs ys)
 
