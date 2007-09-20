@@ -11,7 +11,6 @@ data Arbol a = Nodo a [Arbol a] deriving Show
 raiz (Nodo n xs) = n
 mostrar (Nodo n xs) = "Nodo " ++ (show n) ++ " [" ++ (concat (map mostrar xs)) ++ "] "    
 ----------------------------------------------------Funciones útiles
-
 foldArbol :: (a->[b]->b)-> Arbol a -> b
 foldArbol g (Nodo n xs)  =	g n (map (foldArbol g) xs) 
 
@@ -71,10 +70,6 @@ aPrueba = (Nodo 1 [(Nodo 4 [(Nodo 3 [Nodo 2 [(Nodo 1 [])]])])])       --arbol de
 aPrueba2 = ( Nodo 2 [(Nodo 4 []) ,(Nodo 4 []) , (Nodo 4 []) , (Nodo 4 [])] ) --arbol de altura 2
 aPrueba3 = (Nodo 3 [aPrueba2, (Nodo 4 [(Nodo 3 [Nodo 2 [(Nodo 1 [])]])])])       --arbol de altura 5
 
-altura::Arbol a->Int
-altura ar = foldArbol f ar 
-	where f n r = 1 + (if (length r) > 0 then (maximum r) else 0)
-
 a9D = Nodo 9 [Nodo 6 [], Nodo 10 []]
 a9I = Nodo 13 [Nodo 10 [],Nodo 4 [Nodo 7 [],Nodo 3 []],Nodo 14 [],Nodo 8 []]
 aM10 = Nodo 10 [a9I, a9D]
@@ -82,6 +77,30 @@ aM2 = Nodo 2 [Nodo 3 [],Nodo 1 [],Nodo 11 []]
 aM6 = Nodo 6 [Nodo 5 [Nodo 6 [Nodo 9 [],Nodo 5 []], Nodo 2 []]]
 aMinimax = (Nodo 1 [aM6, aM10, aM2])
 
+---------------------------------------Prueba foldArbol
+altura::Arbol a->Int
+altura ar = foldArbol f ar 
+	where f n r = 1 + (if (length r) > 0 then (maximum r) else 0)
+
+pA = altura a9D
+pA2 = altura avacio
+---------------------------------------Prueba mapArbol
+pMap1 = mapArbol (\x->x*2) a9D 
+pMap2 = mapArbol  (+2) a9I
+---------------------------------------Prueba foldNat
+contar = foldNat 0 (\x->x+1)
+pFN1 = contar 4
+pFN2 = contar 1
+pFN3 = contar 0
+---------------------------------------Prueba podar
+pP1 = podar 2 aPrueba2
+pP2 = podar 1 aPrueba2
+pP3 = podar 3 aPrueba2
+---------------------------------------Prueba arbolDeMovidas
+pAM = podar 2 (arbolDeMovidas (\x -> [x - 1, x, x + 1]) 0)
+pAM2 = podar 3 (arbolDeMovidas (\x -> [x - 1, x, x + 1]) 0)
+---------------------------------------Prueba minimax
+--Idea, armamos un arbol que en los niveles intercambia entre numeros pares e impares y la funcion de evaluacion maximiza si es impar.
 pMin = minimo (id) [aM6, aM10, aM2]
 pMax = maximo (id) [aM6, aM10, aM2]
 posMin = posMinimo (id) [aM6, aM10, aM2]
