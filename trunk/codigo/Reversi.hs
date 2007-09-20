@@ -245,24 +245,33 @@ diferenciaNegrasBlancas j = (contar Negro (tablero j )) - (contar Blanco ( table
 -- 
 -- cE1 = coordEntre Negro tabPrueba (1,3) pA1 --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
 -- cE2 = coordEntre Blanco tabPrueba (1,3) pA2 --resultado esperado [(1,4),(2,3),(3,3)]
--- 
+
+
+--------Pruebas  coordsQueInvierte 
+
 -- cI1  = coordsQueInvierte Negro tabPrueba (5,2)	--resultado esperado  []
 -- cI2  = coordsQueInvierte Blanco tabPrueba (5,2)	--resultado esperado  []
 -- cI3  = coordsQueInvierte Negro tabPrueba (1,3)  --resultado esperado [(1,1),(1,2),(2,2),(3,1)]
 -- cI4  = coordsQueInvierte Blanco tabPrueba (1,3) --resultado esperado [(1,4),(2,3),(3,3)]
 -- cI5  = coordsQueInvierte Negro tabPrueba (6,3)  --resultado esperado  []
 -- cI6  = coordsQueInvierte Negro tabPrueba (5,3)  --resultado esperado  [(4,3)]
--- 
+
+-------Pruebas puedeJugarEn
+
 -- pJEP1 = puedeJugarEn Negro tabPrueba (5,2)   --resultado esperado False
 -- pJEP2 = puedeJugarEn Blanco tabPrueba (5,2)  --resultado esperado False
 -- pJEP3 = puedeJugarEn Negro tabPrueba (1,3)   --resultado esperado True
 -- pJEP4 = puedeJugarEn Blanco tabPrueba (1,3)  --resultado esperado True
 -- pJEP5 = puedeJugarEn Negro tabPrueba (6,3)   --resultado esperado False
 -- pJEP6 = puedeJugarEn Negro tabPrueba (5,3)	 --resultado esperado False
--- 
+
+-------Pruebas ultimaCoordJugada
+
 -- uCJ1 = ultimaCoordJugada jPrueba 	 --resultado esperado Just (3,4)
 -- uCJ2 = ultimaCoordJugada ( Comenzar (6,6) ) --resultado esperado Nothing
--- 
+
+-------Armado de pruebas varias
+
 -- jPrueba2 = Poner (Poner (Poner(Poner( Poner (Comenzar (3,4)) (0,3)) (1,3))(2,1))(1,0)) (2,0)
 -- jTerminado = (Poner( Poner jPrueba2 (0,0))(2,3))
 -- --modificar
