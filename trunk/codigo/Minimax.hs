@@ -3,6 +3,8 @@ module Minimax(
         --, alfaBeta -- opcional
 ) where
 
+import List
+
 data Arbol a = Nodo a [Arbol a] deriving Show
 
 raiz (Nodo n xs) = n
@@ -20,9 +22,8 @@ foldNat fCero fN n = fN (foldNat fCero fN (n-1))
 
 
 -- PODAR ANDA USANDO RECURSION!!!
---podar :: Int -> Arbol a -> Arbol a
---podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt 
-	
+podar :: Int -> Arbol a -> Arbol a
+podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt	
 
 --agregarUnNivel :: Arbol a -> Arbol a -> Arbol a
 --agregarUnNivel (Nodo a xs) (Nodo b []) = Nodo b (damePadres xs)--todos los padres de los arboles de xs
@@ -36,8 +37,8 @@ foldNat fCero fN n = fN (foldNat fCero fN (n-1))
 
 --definimos un esquema de recursion auxiliar para permitir esquemas con doble recursion
 
-podar :: Int -> Arbol a -> Arbol a
-podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt 
+--podar :: Int -> Arbol a -> Arbol a
+--podar alt (Nodo n xs) = foldNat (Nodo n []) (agregarUnNivel (Nodo n xs)) alt 
 
 --Este esquema de recursion lo definimos para poder realizar recursiones doblemente encadenadas
 --ya que con el FoldArbol asi como asi...no es posible hacer este tipo de recursiones
@@ -58,6 +59,39 @@ damePadres xs = map (\x->damePadre x) xs
 damePadre :: Arbol a -> Arbol a
 damePadre (Nodo a xs) = Nodo a []
 
+
+---------------------------------------------------------------------------------
+--PODAR 2
+--escribi podar de otra manera , aunque todavia nose si anda bien ya que no la probe mucho...
+--habria que revisar un poco mas
+podar2:: Int -> Arbol a -> Arbol a
+podar2 n ab = podarAux (abs((altura ab)-n)) ab
+
+podarAux :: Int -> Arbol a -> Arbol a
+podarAux alt ab = foldNat (ab) (eliminarUltimoNivel) alt
+--podarAux 0 ab = ab
+--podarAux n ab = podarAux (n-1) (eliminarUltimoNivel ab)
+
+--esta funcion elimina el ultimo nivel de un arbol , osea devuelve el mismo arbol pero sin
+--el ultimo nivel...creo q aca deberia ser mas facil eliminar la recursion....
+eliminarUltimoNivel::Arbol a -> Arbol a
+eliminarUltimoNivel (Nodo a xs) = if (sinHijos xs) then
+                                        Nodo a []
+                                  else
+								        Nodo a (map eliminarUltimoNivel(dameNodosMaximaAltura xs))
+										
+--eliminarUltimoNivel (Nodo a xs) = foldArbol (\x ys -> if sinHijos x then )										
+
+--devuelve los nodos con ramas con maxima altura , la idea es elegir los nodos de maxima altura
+--para llegar y eliminar las hojas del ultimo nivel										
+dameNodosMaximaAltura::[Arbol a] -> [Arbol a]
+dameNodosMaximaAltura xs = nubBy (\x y -> altura x >= altura y ) xs
+
+--devuelve true si todos los hijos de un nodo dado , son todos hoja 
+sinHijos::[Arbol a] -> Bool
+sinHijos xs = length (filter (>1) (map altura xs)) ==0
+										
+										
 ----------------------------------------------------------------------------------------------------------
 --En este también consulté y vale recursion explicita, creo que asi esta bien.
 aArbol::[a]->[Arbol a]
