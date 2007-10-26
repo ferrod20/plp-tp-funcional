@@ -100,14 +100,12 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- obtTecla(Caracter,Xs,Tecla).
 %var(t): es True if t is una variable libre.
 
 
-
+%-----------No se pueden usar en el parcial ni en las practicas-----------------------------
 %sublist(pred, List1, List2): filtra List1 con pred, unifica en List2    
 %maplist(+Pred, +List): Se aplica pred a cada elemento de la lista hasta el final o hasta que pred de falso.    
 %maplist(+Pred, ?List1, ?List2): Se aplica pred a cada par de elementos de List1 y List2 hasta que pred de falso.        
 %maplist(+Pred, ?List1, ?List2, ?List3): Idem anterior para triplas...    
 
 %setof(+Template, +Goal, -Set).......falta!!
-    
-
-
 %Meta-predicados: bagof, setof, maplist, sublist, not, var, nonvar
+%-----------No se pueden usar en el parcial ni en las practicas-----------------------------
