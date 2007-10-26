@@ -25,7 +25,7 @@ diccionario([
 %No
 %
 teclasNecesarias([],[]).
-teclasNecesarias([X|Xs],Ys):- teclaNecesaria(X,T), teclasNecesarias(Xs,Ys), append([T] ,YYs, Ys).
+teclasNecesarias([X|Xs],Ys):- teclaNecesaria(X,T), teclasNecesarias(Xs,YYs), append([T] ,YYs, Ys).
 
 teclaNecesaria(Caracter,Tecla):- teclado(T), obtTecla(Caracter, T, Tecla).
 
@@ -45,6 +45,10 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- obtTecla(Caracter,Xs,Tecla).
 %P = [c, a, s, a, m, i, e, n, t, o] ;
 %No
 %
+
+%palabraPosible( [], Palabra).
+%palabraPosible( Xs, Palabra):- teclasNecesarias(P,Xs), //falta filtrar las P que son prefijo del diccionario
+
 %3. todasLasPalabrasPosibles(+ListaDigitos, -Palabras) donde ListaDigitos es una lista de teclas presionadas y tiene exito si Palabras es una lista de palabras del diccionario tal que las teclas presionadas generan una lista de caracteres que puede ser prefijo de la mismas.
 %Nota: tener en cuenta que la solucion debe ser vista como un conjunto. O sea, soluciones con las mismas palabras pero en distinto orden deben ser consideradas como iguales (no deben devolverse repetidos). Ejemplo:
 %
