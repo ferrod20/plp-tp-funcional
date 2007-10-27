@@ -24,14 +24,16 @@ diccionario([
 %Ds = [2, 2, 7, 2] ;
 %No
 %
+
+
 teclasNecesarias([],[]).
-teclasNecesarias([X|Xs],Ys):- teclaNecesaria(X,T), teclasNecesarias(Xs,YYs), append([T] ,YYs, Ys).
+teclasNecesarias([X|Xs],Ys):- teclaNecesaria(X,T) , teclasNecesarias(Xs,YYs) , append([T] ,YYs, Ys).
 
 teclaNecesaria(Caracter,Tecla):- teclado(T), obtTecla(Caracter, T, Tecla).
 
 obtTecla( Caracter,[], _ ):-!. 
 obtTecla( Caracter,[(Tecla,Cs)|Xs], Tecla ):- member(Caracter, Cs).
-obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- obtTecla(Caracter,Xs,Tecla).
+obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(Caracter,Xs,Tecla).
 
 
 
