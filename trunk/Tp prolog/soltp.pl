@@ -69,7 +69,7 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(C
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 todasLasPalabrasPosibles([],[]).
-todasLasPalabrasPosibles(Ds,Ys):- setof(Ds, palabraPosible(Ds,Ts) , Ys)
+todasLasPalabrasPosibles(Ds,Ys):- setof(Ds, palabraPosible(Ds,Ts) , Ys).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
