@@ -26,15 +26,16 @@ diccionario([
 %
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 teclasNecesarias([],[]).
 teclasNecesarias([X|Xs],Ys):- teclaNecesaria(X,T) , teclasNecesarias(Xs,YYs) , append([T] ,YYs, Ys).
 
 teclaNecesaria(Caracter,Tecla):- teclado(T), obtTecla(Caracter, T, Tecla).
 
-obtTecla( Caracter,[], _ ):-!. 
+obtTecla( Caracter,[], _ ). 
 obtTecla( Caracter,[(Tecla,Cs)|Xs], Tecla ):- member(Caracter, Cs).
 obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(Caracter,Xs,Tecla).
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %2. palabraPosible(+ListaDigitos, -Palabra) donde ListaDigitos es una lista de teclas presionadas y tiene exito si Palabra es una palabra del diccionario, y con las teclas presionadas se obtiene esa palabra o un prefijo de la misma.
@@ -48,8 +49,11 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(C
 %No
 %
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %palabraPosible( [], Palabra).
 %palabraPosible( Xs, Palabra):- teclasNecesarias(P,Xs), //falta filtrar las P que son prefijo del diccionario
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %3. todasLasPalabrasPosibles(+ListaDigitos, -Palabras) donde ListaDigitos es una lista de teclas presionadas y tiene exito si Palabras es una lista de palabras del diccionario tal que las teclas presionadas generan una lista de caracteres que puede ser prefijo de la mismas.
 %Nota: tener en cuenta que la solucion debe ser vista como un conjunto. O sea, soluciones con las mismas palabras pero en distinto orden deben ser consideradas como iguales (no deben devolverse repetidos). Ejemplo:
@@ -62,6 +66,14 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(C
 %[c, a, s, a, m, i, e, n, t, o]]).
 %Yes
 %
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+todasLasPalabrasPosibles([],[]).
+todasLasPalabrasPosibles(Ds,Ys):- setof(DS, palabraPosible , Ys)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 %4. oracionPosible(+ListaDigitos, -Oracion) donde ListaDigitos es una lista de teclas presionadas que puede incluir el * (que se mapea al espacio), y tiene exito si se formo una oracion correcta. Una oracion es correcta si cada una de las secuencias de teclas entre los * puede formar una palabra del diccionario (es decir una palabra como en los items anteriores). Ejemplo:
 %
 %?- oracionPosible([2,*,3], O).
@@ -112,6 +124,6 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(C
 %maplist(+Pred, ?List1, ?List2): Se aplica pred a cada par de elementos de List1 y List2 hasta que pred de falso.        
 %maplist(+Pred, ?List1, ?List2, ?List3): Idem anterior para triplas...    
 
-%setof(+Template, +Goal, -Set).......falta!!
+%setof(+Template, +Goal, -Set) evalua todos los elementos de +Template en Goal+ y devuelve todos aquellos que hacen al predicado +Goal true en la lista -Set
 %Meta-predicados: bagof, setof, maplist, sublist, not, var, nonvar
 %-----------No se pueden usar en el parcial ni en las practicas-----------------------------
