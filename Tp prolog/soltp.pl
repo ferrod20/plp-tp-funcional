@@ -50,8 +50,31 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(C
 %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%palabraPosible( [], Palabra).
-%palabraPosible( Xs, Palabra):- teclasNecesarias(P,Xs), //falta filtrar las P que son prefijo del diccionario
+
+%Hasta ahora no pude hacer andar esta garcha..
+palabraPosible( [], Palabra).
+palabraPosible( Xs, Palabra):- teclasNecesarias(P,Xs), diccionario(D), setof(P,prefijo(P,D),Ps) , member(Palabra, Ps).
+
+
+%verificarPrefijo(_,[],_).
+%verificarPrefijo(P,[X|XS],Palabra):- var(Palabra), prefijo(P,X), Palabra is P,verificarPrefijo(P,XS,Palabra).
+
+
+%TODO:ver si anda sin el "!"
+
+prefijo([],_M):-!.
+prefijo([_X],[_X|_M]):-!.
+prefijo([_X|L],[_X|M]):- prefijo(L,M).
+
+%test de prefijo:
+%2 ?- prefijo([1],[1,2,3]).
+%Yes
+%3 ?- prefijo([1,2],[1,2,3]).
+%Yes
+%4 ?- prefijo([1,3],[1,2,3]).
+%No
+%5 ?- prefijo([1,1],[1,2,3]).
+%No
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -68,8 +91,9 @@ obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(C
 %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 todasLasPalabrasPosibles([],[]).
-todasLasPalabrasPosibles(Ds,Ys):- setof(Ds, palabraPosible(Ds,Ts) , Ys).
+todasLasPalabrasPosibles(Ds,Ys):- setof(Ts, palabraPosible(Ds,Ts) , Ys).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
