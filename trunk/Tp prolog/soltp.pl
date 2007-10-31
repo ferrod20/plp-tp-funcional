@@ -127,7 +127,7 @@ todasLasPalabrasPosibles(Ds,Ys):- setof(Ts, palabraPosible(Ds,Ts) , Ys).
 %last(xs, e): Dice si el ult elemento de xs unifica con e.
 %sumlist(xs, sum): Hace la sumatoria de xs y unifica con sum.
 %delete(xs, e, ys) elimina todos los miembros de xs que unifican con e y con ys.
-%select(e, xs, r) Selecciona e de xs dejando el resto r...???
+%select(e, xs, r) Selecciona e de xs dejando el resto r...??
 %reverse(xs, ys)    da vuelta xs y unifica con ys
 %numlist(Low, High, ys)    unifica ys a una lista [Low, Low +1, ...High]
 %sort(xs, ys): ys unifica a una lista ordenada a partir de xs, se eliminan duplicados.
