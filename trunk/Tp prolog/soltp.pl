@@ -146,7 +146,7 @@ todasLasPalabrasPosibles(Ds,Ys):- setof(Ts, palabraPosible(Ds,Ts) , Ys).
 %sublist(pred, List1, List2): filtra List1 con pred, unifica en List2    
 %maplist(+Pred, +List): Se aplica pred a cada elemento de la lista hasta el final o hasta que pred de falso.    
 %maplist(+Pred, ?List1, ?List2): Se aplica pred a cada par de elementos de List1 y List2 hasta que pred de falso.        
-%maplist(+Pred, ?List1, ?List2, ?List3): Idem anterior para triplas.......    
+%maplist(+Pred, ?List1, ?List2, ?List3): Idem anterior para triplas....... .....   
 
 %setof(+Template, +Goal, -Set) evalua todos los elementos de +Template en Goal+ y devuelve todos aquellos que hacen al predicado +Goal true en la lista -Set
 %Meta-predicados: bagof, setof, maplist, sublist, not, var, nonvar
