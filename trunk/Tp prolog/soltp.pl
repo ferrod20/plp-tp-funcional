@@ -1,119 +1,56 @@
-%Los celulares actuales tienen incorporado un dicionario de palabras y un algoritmo que va restringiendo las posibles palabras que puedan ser resultado de la presion de una serie de teclas del aparato.
-%El objetivo del TP es representar el comportamiento predictivo de los mensajes de texto de los celulares.
-%Para ello se definen dos predicados que brindan la informacion necesaria del telefono celular:
-%1. Se define el mapeo entre las teclas de celular y los caracteres de la siguiente manera: 
 teclado([ (1, [1]), (2, [2,a,b,c]), (3, [3,d,e,f]),
 (4, [4,g,h,i]), (5, [5,j,k,l]), (6, [6,m,o,n]),
 (7, [7,p,q,r,s]), (8, [8,t,u,v]), (9, [9,w,x,y,z]),
 (0, [0]), (*, [-]), (#, [#])
 ]).
-%es decir con una lista de tuplas (D, Xs) donde D es el digito presionado y Xs es la lista de caracteres que puede representar dicho digito. Los caracteres se representan por medio de un atomo o de un numero entero. Notar que el caracter " " esta representado por el atomo "-"
-%2. El diccionario de palabras se representa de la siguiente manera:
 diccionario([ 
 [1,a], [l,a], [c,a,s,a], [a], [d,e], [r,e,j,a], [t,i,e,n,e],
 [c,a,s,a,m,i,e,n,t,o], [d,e,l], [a,n,t,e,s]
 ]).
-%es decir una lista de lista de caracteres que representan las palabras conocidas. Puede asumirse que ninguna palabra del diccionario contiene el atomo "-".
-%1. Predicados pedidos
-%
-%Se pide definir los siguientes predicados, respetando la instanciacion pedida y de tal manera que no se devuelvan soluciones repetidas:
-%
-%1. teclasNecesarias(+Palabra, -ListaDigitos) donde Palabra es una lista de caracteres y tiene exito si la ListaDigitos es la lista con los digitos que deben presionarse para obtenerla. Ejemplo:
-%
-%?- teclasNecesarias([c,a,s,a], Ds).
-%Ds = [2, 2, 7, 2] ;
-%No
-%
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------------------------------------------------------------------------------------------------------
 teclasNecesarias([],[]).
 teclasNecesarias([X|Xs],Ys):- teclaNecesaria(X,T) , teclasNecesarias(Xs,YYs) , append([T] ,YYs, Ys).
 
 teclaNecesaria(Caracter,Tecla):- teclado(T), obtTecla(Caracter, T, Tecla).
 
-obtTecla( Caracter,[], _ ). 
-obtTecla( Caracter,[(Tecla,Cs)|Xs], Tecla ):- member(Caracter, Cs).
-obtTecla( Caracter,[(T,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(Caracter,Xs,Tecla).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+obtTecla( _,[], _ ). 
+obtTecla( Caracter,[(Tecla,Cs)|_], Tecla ):- member(Caracter, Cs).
+obtTecla( Caracter,[(_,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(Caracter,Xs,Tecla).
+%-------------------------------------------------------------------------------------------------------------
+palabraPosible( Xs, Pal):- diccionario(D), member(Pal, D), prefijo(Pref,Pal), length(Pref,L), L>0, teclasNecesarias(Pref,Xs).
 
-
-%2. palabraPosible(+ListaDigitos, -Palabra) donde ListaDigitos es una lista de teclas presionadas y tiene exito si Palabra es una palabra del diccionario, y con las teclas presionadas se obtiene esa palabra o un prefijo de la misma.
-%Ejemplo:
-%
-%?- palabraPosible([2], P).
-%P = [a] ;
-%P = [a, n, t, e, s] ;
-%P = [c, a, s, a] ;
-%P = [c, a, s, a, m, i, e, n, t, o] ;
-%No
-%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%Hasta ahora no pude hacer andar esta garcha..
-palabraPosible( [], Palabra).
-palabraPosible( Xs, Palabra):- teclasNecesarias(P,Xs), diccionario(D), setof(P,prefijo(P,D),Ps) , member(Palabra, Ps).
-
-
-%verificarPrefijo(_,[],_).
-%verificarPrefijo(P,[X|XS],Palabra):- var(Palabra), prefijo(P,X), Palabra is P,verificarPrefijo(P,XS,Palabra).
-
-
-%TODO:ver si anda sin el "!"
-
-prefijo([],_M):-!.
-prefijo([_X],[_X|_M]):-!.
-prefijo([_X|L],[_X|M]):- prefijo(L,M).
-
-%test de prefijo:
-%2 ?- prefijo([1],[1,2,3]).
-%Yes
-%3 ?- prefijo([1,2],[1,2,3]).
-%Yes
-%4 ?- prefijo([1,3],[1,2,3]).
-%No
-%5 ?- prefijo([1,1],[1,2,3]).
-%No
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%3. todasLasPalabrasPosibles(+ListaDigitos, -Palabras) donde ListaDigitos es una lista de teclas presionadas y tiene exito si Palabras es una lista de palabras del diccionario tal que las teclas presionadas generan una lista de caracteres que puede ser prefijo de la mismas.
-%Nota: tener en cuenta que la solucion debe ser vista como un conjunto. O sea, soluciones con las mismas palabras pero en distinto orden deben ser consideradas como iguales (no deben devolverse repetidos). Ejemplo:
-%
-%?- todasLasPalabrasPosibles([2], Ps).
-%Ps = [[a], [a, n, t, e, s], [c, a, s, a], [c, a, s, a, m, i, e, n, t, o]] ;
-%No
-%
-%?- todasLasPalabrasPosibles([2], [[c, a, s, a],[a], [a, n, t, e, s],
-%[c, a, s, a, m, i, e, n, t, o]]).
-%Yes
-%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+prefijo([],_).
+prefijo([X|L],[X|M]):- prefijo(L,M).
+%-------------------------------------------------------------------------------------------------------------
+%No anda con:
+%?- todasLasPalabrasPosibles([2], [[c, a, s, a],[a], [a, n, t, e, s],[c, a, s, a, m, i, e, n, t, o]]).
 
 todasLasPalabrasPosibles([],[]).
 todasLasPalabrasPosibles(Ds,Ys):- setof(Ts, palabraPosible(Ds,Ts) , Ys).
+%-------------------------------------------------------------------------------------------------------------
+%Idea: cortar Xs por palabras; cada vez que aparece un *. Buscar las palabras posibles para esas teclas. Pegar las palabras posibles.
+oracionPosible(Xs,Ys):-oracionPosible(Xs,[],Ys).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+oracionPosible([],O,O).
+oracionPosible(Xs,Ys,Zs):-tomarEspacio(Xs,R),append(Ys,[-],Z),oracionPosible(R,Z,Zs).
+oracionPosible(Xs,Ys,Zs):-length(Xs,L), L>0, not(tomarEspacio(Xs,_)),tomarTeclas(Xs,Ts,R), palabraPosible(Ts,Pal), append(Ys,Pal,Z), oracionPosible(R,Z,Zs).
 
+%tomarTeclas(Xs,Ts,Rs): Toma todos los elementos de Xs hasta encontrar un *, estos elementos los guarda en Ts. En Rs quedan los elementos de Xs sin los que se guardaron en Ts.
+%Ejemplo:
+%?- tomarTeclas([2,3,*,3],Ts,Rs).
+%Ts = [2, 3],
+%Rs = [*, 3] 
 
-%4. oracionPosible(+ListaDigitos, -Oracion) donde ListaDigitos es una lista de teclas presionadas que puede incluir el * (que se mapea al espacio), y tiene exito si se formo una oracion correcta. Una oracion es correcta si cada una de las secuencias de teclas entre los * puede formar una palabra del diccionario (es decir una palabra como en los items anteriores). Ejemplo:
-%
-%?- oracionPosible([2,*,3], O).
-%O = [a, -, d, e] ;
-%O = [a, -, d, e, l] ;
-%O = [a, n, t, e, s, -, d, e] ;
-%O = [a, n, t, e, s, -, d, e, l] ;
-%O = [c, a, s, a, -, d, e] ;
-%O = [c, a, s, a, -, d, e, l] ;
-%O = [c, a, s, a, m, i, e, n, t, o, -, d, e] ;
-%O = [c, a, s, a, m, i, e, n, t, o, -, d, e, l] ;
-%No
-%
-%%----------------------------descartado-----------------------------------
+tomarTeclas([],[],[]).
+tomarTeclas([X|Xs],[],[X|Xs]):- X == * .
+tomarTeclas([X|Xs],[X|Ys],Zs):- X \== * , tomarTeclas(Xs,Ys,Zs).
+
+%tomarEspacio(Xs,Ys): Es verdadero si el primer elemento de Xs es un * y si Ys es igual a Xs sin ese elemento.
+tomarEspacio([X|Xs],Xs):- X == * .
+%-------------------------------------------------------------------------------------------------------------
 %1.1. Juego adicional (opcional) 
-%%----------------------------descartado-----------------------------------
+%-------------------------------------------------------------------------------------------------------------
 
 
 
