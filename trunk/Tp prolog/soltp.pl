@@ -34,6 +34,7 @@ todasLasPalabrasPosibles(Digits, Pal) :- var(Pal),setof(P, palabraPosible(Digits
 
 %-------------------------------------------------------------------------------------------------------------
 %Idea: cortar Xs por palabras; cada vez que aparece un *. Buscar las palabras posibles para esas teclas. Pegar las palabras posibles.
+%Casos de test: oracionPosible([2,*,3], O).
 oracionPosible(Xs,Ys):-oracionPosible(Xs,[],Ys).
 
 oracionPosible([],O,O).
