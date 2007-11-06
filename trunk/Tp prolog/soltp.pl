@@ -23,11 +23,15 @@ palabraPosible( Xs, Pal):- diccionario(D), member(Pal, D), prefijo(Pref,Pal), le
 prefijo([],_).
 prefijo([X|L],[X|M]):- prefijo(L,M).
 %-------------------------------------------------------------------------------------------------------------
-%No anda con:
-%?- todasLasPalabrasPosibles([2], [[c, a, s, a],[a], [a, n, t, e, s],[c, a, s, a, m, i, e, n, t, o]]).
+%Casos de test
+% todasLasPalabrasPosibles([2], [[c, a, s, a],[a], [a, n, t, e, s],[c, a, s, a, m, i, e, n, t, o]]).
+% todasLasPalabrasPosibles([2], Ps).
+% todasLasPalabrasPosibles([7], Ps).
 
 todasLasPalabrasPosibles([],[]).
-todasLasPalabrasPosibles(Ds,Ys):- setof(Ts, palabraPosible(Ds,Ts) , Ys).
+todasLasPalabrasPosibles(Digits, Pal) :- nonvar(Pal),setof(P, palabraPosible(Digits,P), P1),sort(Pal,P1).
+todasLasPalabrasPosibles(Digits, Pal) :- var(Pal),setof(P, palabraPosible(Digits,P), Pal).
+
 %-------------------------------------------------------------------------------------------------------------
 %Idea: cortar Xs por palabras; cada vez que aparece un *. Buscar las palabras posibles para esas teclas. Pegar las palabras posibles.
 oracionPosible(Xs,Ys):-oracionPosible(Xs,[],Ys).
