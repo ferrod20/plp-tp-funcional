@@ -93,3 +93,102 @@ tomarEspacio([X|Xs],Xs):- X == * .
 %setof(+Template, +Goal, -Set) evalua todos los elementos de +Template en Goal+ y devuelve todos aquellos que hacen al predicado +Goal true en la lista -Set
 %Meta-predicados: bagof, setof, maplist, sublist, not, var, nonvar
 %-----------No se pueden usar en el parcial ni en las practicas-----------------------------
+
+%------------------------------PRUEBAS------------------------------------------------------
+
+%Casos de prueba
+
+teclas1([2]).
+teclas2([2,*,3]).
+palabra1([1,c]).
+
+
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+test0(Ds) :- teclasNecesarias([c,a,s,a], Ds).
+%Resultado:
+
+%Ds = [2, 2, 7, 2] ;
+
+%No
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+test1(X) :- teclas1(Ts), palabraPosible(Ts, X).
+%Resultado:
+
+%X = [c, a, s, a] ;
+
+%X = [a] ;
+
+%X = [c, a, s, a, m, i, e, n, t|...] ;
+
+%X = [a, n, t, e, s] ;
+
+%No
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+test2a(X) :- teclas1(Ts), todasLasPalabrasPosibles(Ts, X).
+%Resultado:
+
+
+%X = [[a], [a, n, t, e, s], [c, a, s, a], [c, a, s, a, m|...]] ;
+
+%No
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+test2b :- teclas1(Ts), todasLasPalabrasPosibles(Ts,  [[c, a, s, a],[a], [a, n, t, e, s]]).
+%Resultado:
+
+%No
+%le falta la palabra casamiento..por lo que deberia devolver NO, por lo que es correcto
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+%Test hecho por nosotros, ahora deberia devolver YES
+test2c :- teclas1(Ts), todasLasPalabrasPosibles(Ts,  [[c, a, s, a],[a], [a, n, t, e, s],[c,a,s,a,m,i,e,n,t,o]]).
+%Resultado:
+
+%Yes
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+test2d :- teclas1(Ts), todasLasPalabrasPosibles(Ts,  [[c,a,s,a,m,i,e,n,t,o],[c, a, s, a],[a], [a, n, t, e, s]]).
+%Resultado:
+
+%Yes
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+test3(X) :- palabra1(P), teclasNecesarias(P, X).
+%Resultado:
+
+%X = [1, 2] ;
+
+%No
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+test4a(X) :- teclas1(Ts), oracionPosible(Ts, X).
+%Resultado:
+
+%X = [c, a, s, a] ;
+
+%X = [a] ;
+
+%X = [c, a, s, a, m, i, e, n, t|...] ;
+
+%X = [a, n, t, e, s] ;
+
+%No
+%------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+test4b(X) :- teclas2(Ts), oracionPosible(Ts, X).
+%Resultado:
+
+%X = [c, a, s, a, -, d, e] ;
+
+%X = [c, a, s, a, -, d, e, l] ;
+
+%X = [a, -, d, e] ;
+
+%X = [a, -, d, e, l] ;
+
+%X = [c, a, s, a, m, i, e, n, t|...] ;
+
+%X = [c, a, s, a, m, i, e, n, t|...] ;
+
+%X = [a, n, t, e, s, -, d, e] ;
+
+%X = [a, n, t, e, s, -, d, e, l] ;
+
+%No
+%------------------------------FIN PRUEBAS------------------------------------------------------
