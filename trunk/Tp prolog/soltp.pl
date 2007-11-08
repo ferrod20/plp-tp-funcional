@@ -18,10 +18,26 @@ obtTecla( _,[], _ ).
 obtTecla( Caracter,[(Tecla,Cs)|_], Tecla ):- member(Caracter, Cs).
 obtTecla( Caracter,[(_,Cs)|Xs], Tecla ):- not( member(Caracter, Cs)), obtTecla(Caracter,Xs,Tecla).
 %-------------------------------------------------------------------------------------------------------------
-palabraPosible( Xs, Pal):- diccionario(D), member(Pal, D), prefijo(Pref,Pal), length(Pref,L), L>0, teclasNecesarias(Pref,Xs).
+
+%Version anterior que era menos eficiente que la actual
+%palabraPosible( Xs, Pal):- diccionario(D), member(Pal, D), prefijo(Pref,Pal), length(Pref,L), L>0, teclasNecesarias(Pref,Xs).
+
+caracterPosible(T,C,[(Tecla,Cs)|_]):- T == Tecla, member(C,Cs).
+caracterPosible(T,C,[(Tecla,_)|Xs]):- T \== Tecla, caracterPosible(T,C,Xs).
+
+palabraPosible( Xs, P):- palPosible(Xs,Pal), diccionario(D),
+sonPrefijo(D,Pal,Ys), member(P,Ys).
+
+palPosible([], []).
+palPosible([X|Xs], [Y|Ys]):- teclado(T), caracterPosible(X,Y,T),
+palPosible(Xs,Ys).
+
+sonPrefijo(Xs,Pal,Ys):-sublist(prefijo(Pal),Xs,Ys).
 
 prefijo([],_).
 prefijo([X|L],[X|M]):- prefijo(L,M).
+
+
 %-------------------------------------------------------------------------------------------------------------
 %Casos de test
 % todasLasPalabrasPosibles([2], [[c, a, s, a],[a], [a, n, t, e, s],[c, a, s, a, m, i, e, n, t, o]]).
